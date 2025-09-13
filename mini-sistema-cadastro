@@ -1,0 +1,130 @@
+import json
+import os
+
+# ====== Arquivo para salvar os cadastros ======
+ARQUIVO = "cadastros.json"
+
+# ====== Função para carregar cadastros ======
+def carregar_cadastros():
+    if os.path.exists(ARQUIVO):
+        with open(ARQUIVO, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+# ====== Função para salvar cadastros ======
+def salvar_cadastros():
+    with open(ARQUIVO, "w", encoding="utf-8") as f:
+        json.dump(cadastros, f, ensure_ascii=False, indent=4)
+
+
+cadastros = carregar_cadastros()
+
+#Função para mostrar menu principal.
+def menu():
+    print('-=-=-=-=-=-MENU-=-=-=-=-=-')
+    print('1 - Adicionar Cadastro')
+    print('2 - Listar Cadastros')
+    print('3 - Buscar Cadastro')
+    print('4 - Remover Cadastro')
+    print('0 - Sair')
+    print()
+
+#Função para adicionar cadastros.
+def add_cad():
+    nome = input('Digite seu nome: ').title().strip()
+    idade = int(input('Digite sua idade: ').strip())
+    gmail = input('Digite seu gmail de trabalho: ').strip()
+    salario = float(input('Digite seu salario: ').strip())
+    numero = input('Digite seu numero para contato: ').strip()
+
+    dados = {'nome': nome, 'idade': idade, 'gmail': gmail, 'salario': salario, 'numero': numero}
+    cadastros.append(dados)
+    salvar_cadastros()
+
+#Função para listar os cadastros.
+def listar_cads():
+    for i, pessoa in enumerate(cadastros, start=1):
+        print(f'''Indice: {i}.
+Nome: {pessoa['nome']}
+Idade: {pessoa['idade']}
+G-mail: {pessoa['gmail']}
+Salario: R${pessoa['salario']:.2f}
+Contato: {pessoa['numero']}\n''')
+            
+#Função para buscar cadastros.
+def buscar_cad():
+    nome_buscado = input('Digite o nome que voce deseja buscar: ').title().strip()
+    encontrados = [i for i in cadastros if i['nome'] == nome_buscado]
+    if not encontrados:
+        print('Nenhum cadastro com esse nome foi encontrado!')
+    else:
+        for i, pessoa in enumerate(encontrados, start=1):
+            print(f'''Indice: {i}.
+Nome: {pessoa['nome']}
+Idade: {pessoa['idade']}
+G-mail: {pessoa['gmail']}
+Salario: R${pessoa['salario']:.2f}
+Contato: {pessoa['numero']}\n''')
+
+
+#Função para remover cadastros.
+def remover_cad():
+    nome_removido = input('Digite o nome a ser removido: ').title().strip()
+    removidos = [i for i in cadastros if i['nome'] == nome_removido]
+
+    if not removidos:
+        print('Nenhum cadastro com esse nome foi encontrado!\n')
+        return
+
+    for i, pessoa in enumerate(removidos, start=1):
+        print(f'''Indice: {i}.
+Nome: {pessoa['nome']}
+Idade: {pessoa['idade']}
+G-mail: {pessoa['gmail']}
+Salario: R${pessoa['salario']:.2f}
+Contato: {pessoa['numero']}\n''')
+
+    try:
+        indice = int(input('Digite o indice da pessoa que voce deseja remover: ').strip())
+        if 1 <= indice <= len(removidos):
+            cadastros.remove(removidos[indice-1])
+            salvar_cadastros()
+            print(f'{nome_removido} foi removido com exito!\n')
+        else:
+            print('Indice nao encontrado.\n')
+    except ValueError:
+        print("Entrada inválida! Digite apenas números.\n")
+
+#-----Código Principal-----
+while True:
+    menu()
+
+    opcoes = ['Adicionar Cadastro', 'Listar Cadastros', 'Buscar Cadastro', 'Remover Cadastro']
+    try:
+        opcao = int(input('Digite um dos numeros para escolher umas das opcoes acima: ').strip())
+    except ValueError:
+        print("Opção inválida! Digite apenas números.\n")
+        continue
+
+    print()
+
+    if opcao == 0:
+        print('Saindo do sistema...\n')
+        break
+
+    else:
+        print(f'Você escolheu a opcao {opcoes[opcao-1]}.\n')
+        if opcao != 1 and not cadastros:
+            print('A lista de cadastros esta vazia!\n')
+            continue
+    
+    if opcao == 1:
+        add_cad()
+    elif opcao == 2:
+        listar_cads()
+    elif opcao == 3:
+        buscar_cad()
+    else:
+        remover_cad()
+    
+print('Obrigado por utilizar meu progama!')
